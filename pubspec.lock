@@ -86,10 +86,11 @@ packages:
   tirecheck_device_sdk_flutter:
     dependency: "direct main"
     description:
-      name: tirecheck_device_sdk_flutter
-      sha256: b272113d2d7b28c0d93cce4c0f18b57d5ac5e8d244a6fa17b8c67275cf56e95e
-      url: "https://onepub.dev/api/fufhhnofly/"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "0f1780cb6e898c8d4f55768482381756a189f35c"
+      url: "https://github.com/tirecheck/tirecheck-device-sdk-flutter.git"
+    source: git
     version: "0.0.1"
   typed_data:
     dependency: transitive

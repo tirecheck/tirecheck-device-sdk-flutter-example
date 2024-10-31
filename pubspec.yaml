@@ -14,8 +14,7 @@ dependencies:
 
   flutter_blue_plus: ^1.33.5
   tirecheck_device_sdk_flutter:
-    hosted: https://onepub.dev/api/fufhhnofly
-    version: ^0.0.1
-
+    git:
+      url: https://github.com/tirecheck/tirecheck-device-sdk-flutter.git
 flutter:
   uses-material-design: true
