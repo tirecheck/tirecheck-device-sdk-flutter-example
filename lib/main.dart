@@ -31,7 +31,13 @@ class _FlutterBlueAppState extends State<FlutterBlueApp> {
   @override
   void initState() {
     super.initState();
-    tcDeviceSdk = TcDeviceSdk();
+    tcDeviceSdk = TcDeviceSdk(/**
+
+        NOTE:
+        Signature Keys and Pin Keys has to be provided in the format of Map<int, List<List<int>>> and Map<int, String>.
+        The keys are provided by TireCheck and are unique to each bluetooth device.
+    
+     */);
 
     _adapterStateStateSubscription =
         FlutterBluePlus.adapterState.listen((state) {
