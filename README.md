@@ -1,7 +1,7 @@
-# Tirecheck Device SDK Flutter
+# Tirecheck Device SDK Flutter Testing App
 
-This app is for testing of Tirecheck Device SDK Flutter.
-It intergrates the plugin with flutter_blue_plus.
+This app is for testing of Tirecheck Device SDK written in Flutter.
+It intergrates the Tirecheck Device SDK Flutter plugin with flutter_blue_plus library.
 
 ## How to run
 
@@ -15,6 +15,9 @@ To run the Tirecheck Device SDK Flutter app, follow these steps:
     ```sh
     flutter pub get
     ```
+
+3. **Provide signature keys and pin keys** To use the Tirecheck Device SDK in the application user need to pass the signature keys and pin keys to the constructor of the package.
+
 
 3. **Run the App**: Use the following command to run the app on your connected device or emulator.
 
