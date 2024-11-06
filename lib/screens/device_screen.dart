@@ -327,9 +327,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
   Future onGetAutolearnStatus() async {
     try {
       final statuses = (await widget.tcDeviceSdk.bridge
-              .getAutolearnStatuses(_device.id, _vehicleData!))
-          .where((status) => status.autolearnedSensorId != null)
-          .toList();
+              .getAutolearnStatuses(_device.id, _vehicleData!)).toList();
       if (statuses.isEmpty) {
         Snackbar.show(ABC.c, "No autolearn status has been captured.",
             success: true);
