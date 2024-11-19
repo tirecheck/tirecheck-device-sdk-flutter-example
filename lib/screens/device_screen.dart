@@ -23,7 +23,6 @@ class DeviceScreen extends StatefulWidget {
 class _DeviceScreenState extends State<DeviceScreen> {
   int? _rssi;
   String _deviceConnectionState = 'disconnected';
-  late StreamSubscription<int> _mtuSubscription;
   late StreamSubscription<List<ProcessedDevice>> _scanResultsSubscription;
 
   var _device;
@@ -43,7 +42,6 @@ class _DeviceScreenState extends State<DeviceScreen> {
 
   @override
   void dispose() {
-    _mtuSubscription.cancel();
     super.dispose();
   }
 
@@ -108,6 +106,8 @@ class _DeviceScreenState extends State<DeviceScreen> {
           .connect(_device.id, BridgeAccessLevel.manufacturer);
       Snackbar.show(ABC.c, "Connect: Success", success: true);
     } catch (e) {
+            print('Connect error: $e');
+
       Snackbar.show(ABC.c, prettyException("Connect Error:", e),
           success: false);
       await Future.delayed(const Duration(seconds: 20));
@@ -327,7 +327,9 @@ class _DeviceScreenState extends State<DeviceScreen> {
   Future onGetAutolearnStatus() async {
     try {
       final statuses = (await widget.tcDeviceSdk.bridge
-              .getAutolearnStatuses(_device.id, _vehicleData!)).toList();
+              .getAutolearnStatuses(_device.id, _vehicleData!))
+          .where((status) => status.autolearnedSensorId != null)
+          .toList();
       if (statuses.isEmpty) {
         Snackbar.show(ABC.c, "No autolearn status has been captured.",
             success: true);

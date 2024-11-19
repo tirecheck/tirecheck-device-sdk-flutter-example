@@ -17,22 +17,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.18.0"
-  convert:
-    dependency: transitive
-    description:
-      name: convert
-      sha256: b30acd5944035672bc15c6b7a8b47d773e41e2f17de064350988c5d02adb1c68
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.1.2"
-  crypto:
-    dependency: transitive
-    description:
-      name: crypto
-      sha256: "1e445881f28f22d6140f181e07737b22f1e099a5e1ff94b0af2f9e4a463f4855"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.6"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -42,18 +26,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_blue_plus
-      sha256: "22912f71d140ff5c15735d4b2f0425e0a5f61ce6444a29360e7fca05eeebbad7"
+      sha256: d2ac9fac56c4b3b08eb68752380e2d45e64c61db629b70e61bb36c95cb65d431
       url: "https://pub.dev"
     source: hosted
-    version: "1.33.5"
-  js:
-    dependency: transitive
-    description:
-      name: js
-      sha256: c1b2e9b5ea78c45e1a0788d29606ba27dc5f71f019f32ca5140f61ef071838cf
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.7.1"
+    version: "1.34.5"
   material_color_utilities:
     dependency: transitive
     description:
@@ -70,36 +46,37 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.15.0"
-  pointycastle:
+  plugin_platform_interface:
     dependency: transitive
     description:
-      name: pointycastle
-      sha256: "4be0097fcf3fd3e8449e53730c631200ebc7b88016acecab2b0da2f0149222fe"
+      name: plugin_platform_interface
+      sha256: "4820fbfdb9478b1ebae27888254d445073732dae3d6ea81f0b7e06d5dedc3f02"
       url: "https://pub.dev"
     source: hosted
-    version: "3.9.1"
+    version: "2.1.8"
   sky_engine:
     dependency: transitive
     description: flutter
     source: sdk
     version: "0.0.99"
+  tirecheck_bridge_security_plugin:
+    dependency: transitive
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "9efca0cd303a99826ca793af6fa492fec5d4a722"
+      url: "https://github.com/tirecheck/tirecheck_bridge_security_plugin.git"
+    source: git
+    version: "0.0.1"
   tirecheck_device_sdk_flutter:
     dependency: "direct main"
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "0f1780cb6e898c8d4f55768482381756a189f35c"
+      resolved-ref: "894df5b063534f4a8cb3d3c10e9e05b756d9c63d"
       url: "https://github.com/tirecheck/tirecheck-device-sdk-flutter.git"
     source: git
     version: "0.0.1"
-  typed_data:
-    dependency: transitive
-    description:
-      name: typed_data
-      sha256: f9049c039ebfeb4cf7a7104a675823cd72dba8297f264b6637062516699fa006
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.4.0"
   vector_math:
     dependency: transitive
     description:
@@ -110,4 +87,4 @@ packages:
     version: "2.1.4"
 sdks:
   dart: ">=3.5.3 <4.0.0"
-  flutter: ">=2.5.0"
+  flutter: ">=3.3.0"
