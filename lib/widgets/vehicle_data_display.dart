@@ -13,10 +13,6 @@ class VehicleDataWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (vehicleData == null) {
-      return Container();
-    }
-
     return Card(
       margin: const EdgeInsets.all(8.0),
       elevation: 4.0,

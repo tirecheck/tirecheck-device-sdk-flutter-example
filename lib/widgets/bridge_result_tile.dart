@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:tirecheck_device_sdk_flutter/tirecheck_device_sdk.dart';
 
-class ScanResultTile extends StatefulWidget {
-  const ScanResultTile({Key? key, required this.processedDevice, this.onTap})
+class BridgeResultTile extends StatefulWidget {
+  const BridgeResultTile({Key? key, required this.processedDevice, this.onTap})
       : super(key: key);
 
   final ProcessedDevice processedDevice;
   final VoidCallback? onTap;
 
   @override
-  State<ScanResultTile> createState() => _ScanResultTileState();
+  State<BridgeResultTile> createState() => _BridgeResultTileState();
 }
 
-class _ScanResultTileState extends State<ScanResultTile> {
+class _BridgeResultTileState extends State<BridgeResultTile> {
   @override
   void initState() {
     super.initState();
@@ -44,10 +44,6 @@ class _ScanResultTileState extends State<ScanResultTile> {
           ),
         ],
       );
-    } else if (widget.processedDevice.processedDevice is BleBridgeOta) {
-      final bleBridgeOta =
-          widget.processedDevice.processedDevice as BleBridgeOta;
-      return Text(bleBridgeOta.name);
     } else {
       return const Text('Unknown Device');
     }
@@ -60,9 +56,6 @@ class _ScanResultTileState extends State<ScanResultTile> {
       isConnectable = (widget.processedDevice.processedDevice as BleBridge)
               .advertisingData !=
           null;
-    } else if (widget.processedDevice.processedDevice is BleBridgeOta) {
-      isConnectable =
-          true; // Assuming BleBridgeOta is always connectable for this example
     }
 
     return ElevatedButton(

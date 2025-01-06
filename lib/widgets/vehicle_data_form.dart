@@ -227,15 +227,6 @@ class _VehicleDataFormState extends State<VehicleDataForm> {
 
   @override
   Widget build(BuildContext context) {
-    if (mutableVehicle == null) {
-      return Container();
-    }
-
-    // final vinController = TextEditingController(text: mutableVehicle.vin);
-    // final axlesControllers = mutableVehicle.axles.map<TextEditingController>((axle) {
-    //   return TextEditingController(text: axle.targetPressure.toString());
-    // }).toList();
-
     return Card(
       margin: const EdgeInsets.all(8.0),
       elevation: 4.0,
@@ -495,12 +486,18 @@ class _VehicleDataFormState extends State<VehicleDataForm> {
 
     // Update tyres
     for (var i = 0; i < tyresControllers.length; i++) {
+      final tyreSensor = tyresControllers[i]['tpmsSensorId']!.text.isEmpty
+          ? null
+          : tyresControllers[i]['tpmsSensorId']!.text;
       mutableVehicle.tcTyres[i].mountedOn?.positionId =
           int.tryParse(tyresControllers[i]['positionId']!.text);
       mutableVehicle.tcTyres[i].serialNumber =
           tyresControllers[i]['serialNumber']!.text;
-      mutableVehicle.tcTyres[i].tcTpmsSensor?['id'] =
-          tyresControllers[i]['tpmsSensorId']!.text;
+      if (tyreSensor != null) {
+        mutableVehicle.tcTyres[i].tcTpmsSensor?['id'] = tyreSensor;
+      } else {
+        mutableVehicle.tcTyres[i].tcTpmsSensor = null;
+      }
       mutableVehicle.tcTyres[i].pressure =
           double.tryParse(tyresControllers[i]['pressure']!.text);
       mutableVehicle.tcTyres[i].temperature =

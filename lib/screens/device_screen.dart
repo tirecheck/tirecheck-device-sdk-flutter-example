@@ -8,6 +8,7 @@ import '../utils/snackbar.dart';
 import 'package:tirecheck_device_sdk_flutter/tirecheck_device_sdk.dart';
 import '../widgets/vehicle_data_display.dart';
 import '../widgets/vehicle_data_form.dart';
+import '../widgets/vehicle_firmware_update.dart';
 
 class DeviceScreen extends StatefulWidget {
   final ProcessedDevice device;
@@ -26,18 +27,11 @@ class _DeviceScreenState extends State<DeviceScreen> {
   late StreamSubscription<List<ProcessedDevice>> _scanResultsSubscription;
 
   var _device;
+
   @override
   void initState() {
     super.initState();
-
-    widget.tcDeviceSdk.setDeviceStateChangeCallback((device, state) {
-      _deviceConnectionState = state;
-      setState(() {});
-    });
-
-    _device = widget.device.processedDevice is BleBridge
-        ? widget.device.processedDevice as BleBridge
-        : widget.device.processedDevice as BleBridgeOta;
+    _initializeDevice();
   }
 
   @override
@@ -45,25 +39,40 @@ class _DeviceScreenState extends State<DeviceScreen> {
     super.dispose();
   }
 
-  bool get isConnected {
-    return _deviceConnectionState == 'paired';
+  void _initializeDevice() {
+    widget.tcDeviceSdk.setDeviceStateChangeCallback((device, state) {
+      _deviceConnectionState = state;
+      if (state == 'lostConnection') {
+        Snackbar.show(ABC.c, 'Disconnected from the device.', success: false);
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      }
+      if (mounted) {
+        setState(() {});
+      }
+    });
+
+    _device = widget.device.processedDevice is BleBridge
+        ? widget.device.processedDevice as BleBridge
+        : widget.device.processedDevice as BleBridgeOta;
+
+    Future.microtask(() => onConnectInner());
   }
+
+  bool get isConnected => _deviceConnectionState == 'paired';
 
   BridgeTcVehicle? _vehicleData;
   BridgeConfiguration? _bridgeConfiguration;
 
-  Future onGetVehiclePressed() async {
+  Future<void> onGetVehiclePressed() async {
     try {
       final vehicle = await widget.tcDeviceSdk.bridge.getVehicle(_device.id);
       final vehicleConfig =
           await widget.tcDeviceSdk.bridge.getConfiguration(_device.id);
-      final vin = vehicle.vin;
       setState(() {
         _vehicleData = vehicle;
         _bridgeConfiguration = vehicleConfig;
       });
-
-      Snackbar.show(ABC.c, "Vehicle: $vin", success: true);
+      Snackbar.show(ABC.c, "Vehicle: ${vehicle.vin}", success: true);
     } catch (e) {
       Snackbar.show(ABC.c, prettyException("Get Vehicle Error:", e),
           success: false);
@@ -92,7 +101,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
     num axleTyresCount = positionId % 10;
     num axlePosition = (positionId / 100).floor();
     num tyrePosition = (positionId / 10).floor() % 10;
-    bool isSpare = positionId.toString().endsWith('0');
+    // bool isSpare = positionId.toString().endsWith('0');
     final l = tyreLabels[tyrePosition * 10 + axleTyresCount];
     final tyreLabel = l?.replaceAll('_', axlePosition.toString());
     if (tyreLabel != null) return tyreLabel;
@@ -100,25 +109,49 @@ class _DeviceScreenState extends State<DeviceScreen> {
     return tyrePosition.toString();
   }
 
-  Future onConnectPressed() async {
+  Future<void> onConnectInner() async {
     try {
       await widget.tcDeviceSdk.bridge
           .connect(_device.id, BridgeAccessLevel.manufacturer);
       Snackbar.show(ABC.c, "Connect: Success", success: true);
     } catch (e) {
-            print('Connect error: $e');
-
+      print('Connect error: $e');
       Snackbar.show(ABC.c, prettyException("Connect Error:", e),
           success: false);
       await Future.delayed(const Duration(seconds: 20));
     }
   }
 
+  Future<void> onConnectPressed() async {
+    setState(() {
+      _scanResults = [];
+    });
+    final idToConnect = _device.id;
+    _initBluetoothScan();
+    widget.tcDeviceSdk.performScan();
+    try {
+      await waitUntil(() => _scanResults.any((device) {
+            var processedDevice = device.processedDevice is BleBridge
+                ? device.processedDevice as BleBridge
+                : device.processedDevice as BleBridgeOta;
+            return processedDevice.id == idToConnect;
+          }));
+      await widget.tcDeviceSdk.stopScan();
+    } catch (e) {
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text("Bridge was not found. Scan the bridge manually.")),
+      );
+    }
+    await _scanResultsSubscription.cancel();
+    await onConnectInner();
+  }
+
   Future onDisconnectPressed() async {
     try {
       await widget.tcDeviceSdk.bridge.disconnect(_device.id);
-      Navigator.of(context).pop();
-      Snackbar.show(ABC.c, "Disconnect: Success", success: true);
+      Navigator.of(context).popUntil((route) => route.isFirst);
     } catch (e) {
       Snackbar.show(ABC.c, prettyException("Disconnect Error:", e),
           success: false);
@@ -135,18 +168,16 @@ class _DeviceScreenState extends State<DeviceScreen> {
           final index = _scanResults.indexWhere((existingDevice) =>
               existingDevice.processedDevice is BleBridge &&
               (existingDevice.processedDevice as BleBridge).id == device.id);
-
           if (index != -1) {
-            _scanResults[index] = result!;
+            _scanResults[index] = result;
           } else {
-            _scanResults.add(result!);
+            _scanResults.add(result);
           }
         } else if (result.processedDevice is BleBridgeOta) {
           final device = result.processedDevice as BleBridgeOta;
           final index = _scanResults.indexWhere((existingDevice) =>
               existingDevice.processedDevice is BleBridgeOta &&
               (existingDevice.processedDevice as BleBridgeOta).id == device.id);
-
           if (index != -1) {
             _scanResults[index] = result;
           } else {
@@ -154,7 +185,6 @@ class _DeviceScreenState extends State<DeviceScreen> {
           }
         }
       });
-
       if (mounted) {
         setState(() {});
       }
@@ -191,7 +221,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
     final unMountedId = _device.id;
     await widget.tcDeviceSdk.bridge.disconnect(_device.id);
     _initBluetoothScan();
-    widget.tcDeviceSdk.performScan(context);
+    widget.tcDeviceSdk.performScan();
     try {
       await waitUntil(() => _scanResults.any((device) {
             var processedDevice = device.processedDevice is BleBridge
@@ -328,7 +358,6 @@ class _DeviceScreenState extends State<DeviceScreen> {
     try {
       final statuses = (await widget.tcDeviceSdk.bridge
               .getAutolearnStatuses(_device.id, _vehicleData!))
-          .where((status) => status.autolearnedSensorId != null)
           .toList();
       if (statuses.isEmpty) {
         Snackbar.show(ABC.c, "No autolearn status has been captured.",
@@ -345,6 +374,10 @@ class _DeviceScreenState extends State<DeviceScreen> {
       Snackbar.show(ABC.c, prettyException("Get Autolearn Error:", e),
           success: false);
     }
+  }
+
+  Future onUpdateFinished() async {
+    if (!isConnected) await onConnectPressed();
   }
 
   Future onResetAutolearnStatus() async {
@@ -369,37 +402,38 @@ class _DeviceScreenState extends State<DeviceScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          ElevatedButton(
-            onPressed: () async {
-              setState(() {
-                _vehicleDataLoading = true;
-              });
-              await onGetVehiclePressed();
-              setState(() {
-                _vehicleDataLoading = false;
-              });
-            },
-            style: ElevatedButton.styleFrom(
-              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              backgroundColor: Colors.blue,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0),
+          if (_device.name != '030397')
+            ElevatedButton(
+              onPressed: () async {
+                setState(() {
+                  _vehicleDataLoading = true;
+                });
+                await onGetVehiclePressed();
+                setState(() {
+                  _vehicleDataLoading = false;
+                });
+              },
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                backgroundColor: Colors.blue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
               ),
-            ),
-            child: _vehicleDataLoading
-                ? SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      strokeWidth: 2.0,
+              child: _vehicleDataLoading
+                  ? SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        strokeWidth: 2.0,
+                      ),
+                    )
+                  : const Text(
+                      "Get Vehicle",
+                      style: TextStyle(color: Colors.white),
                     ),
-                  )
-                : const Text(
-                    "Get Vehicle",
-                    style: TextStyle(color: Colors.white),
-                  ),
-          ),
+            ),
           if (_vehicleData != null) const SizedBox(width: 8),
           if (_vehicleData != null)
             ElevatedButton(
@@ -450,18 +484,6 @@ class _DeviceScreenState extends State<DeviceScreen> {
             ),
         ],
       ),
-    );
-  }
-
-  Widget buildTestButtons(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        ElevatedButton(
-          onPressed: onStartTest,
-          child: const Text("Start Test"),
-        ),
-      ],
     );
   }
 
@@ -535,8 +557,12 @@ class _DeviceScreenState extends State<DeviceScreen> {
               leading: IconButton(
                 icon: Icon(Icons.arrow_back),
                 onPressed: () async {
-                  if (isConnected) await onDisconnectPressed();
-                  Navigator.of(context).pop();
+                  if (_deviceConnectionState != 'disconnecting' ||
+                      _deviceConnectionState != 'disconnected') {
+                    await onDisconnectPressed();
+                  } else if (Navigator.of(context).canPop()) {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  }
                 },
               ),
             ),
@@ -578,6 +604,12 @@ class _DeviceScreenState extends State<DeviceScreen> {
                       configuration: _bridgeConfiguration!,
                       tcDeviceSdk: widget.tcDeviceSdk,
                       device: widget.device,
+                    ),
+                  if (isConnected)
+                    VehicleFirmwareUpdate(
+                      tcDeviceSdk: widget.tcDeviceSdk,
+                      device: widget.device,
+                      onUpdateFinished: onUpdateFinished,
                     ),
                 ],
               ),

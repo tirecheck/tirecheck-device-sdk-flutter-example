@@ -17,6 +17,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.18.0"
+  cross_file:
+    dependency: transitive
+    description:
+      name: cross_file
+      sha256: "7caf6a750a0c04effbb52a676dce9a4a592e10ad35c34d6d2d0e4811160d5670"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.4+2"
+  ffi:
+    dependency: transitive
+    description:
+      name: ffi
+      sha256: "16ed7b077ef01ad6170a3d0c57caa4a112a38d7a2ed5602e0aca9ca6f3d98da6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.3"
+  file_picker:
+    dependency: "direct main"
+    description:
+      name: file_picker
+      sha256: c904b4ab56d53385563c7c39d8e9fa9af086f91495dfc48717ad84a42c3cf204
+      url: "https://pub.dev"
+    source: hosted
+    version: "8.1.7"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -25,11 +49,25 @@ packages:
   flutter_blue_plus:
     dependency: "direct main"
     description:
-      name: flutter_blue_plus
-      sha256: d2ac9fac56c4b3b08eb68752380e2d45e64c61db629b70e61bb36c95cb65d431
+      path: "."
+      ref: HEAD
+      resolved-ref: "91414347e4ef04a20cc793df035e3bf4a7eeb9f0"
+      url: "https://github.com/tirecheck/tirecheck-flutter-blue-plus.git"
+    source: git
+    version: "1.33.6"
+  flutter_plugin_android_lifecycle:
+    dependency: transitive
+    description:
+      name: flutter_plugin_android_lifecycle
+      sha256: "615a505aef59b151b46bbeef55b36ce2b6ed299d160c51d84281946f0aa0ce0e"
       url: "https://pub.dev"
     source: hosted
-    version: "1.34.5"
+    version: "2.0.24"
+  flutter_web_plugins:
+    dependency: transitive
+    description: flutter
+    source: sdk
+    version: "0.0.0"
   material_color_utilities:
     dependency: transitive
     description:
@@ -46,6 +84,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.15.0"
+  path:
+    dependency: transitive
+    description:
+      name: path
+      sha256: "75cca69d1490965be98c73ceaea117e8a04dd21217b37b292c9ddbec0d955bc5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.9.1"
   plugin_platform_interface:
     dependency: transitive
     description:
@@ -64,7 +110,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "9efca0cd303a99826ca793af6fa492fec5d4a722"
+      resolved-ref: "3d68249f175b7e47b462ed755a57c0c2029797cd"
       url: "https://github.com/tirecheck/tirecheck_bridge_security_plugin.git"
     source: git
     version: "0.0.1"
@@ -73,7 +119,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "894df5b063534f4a8cb3d3c10e9e05b756d9c63d"
+      resolved-ref: "7caafac0fb0d82aa4e44df0f5ec06dc2617807b8"
       url: "https://github.com/tirecheck/tirecheck-device-sdk-flutter.git"
     source: git
     version: "0.0.1"
@@ -85,6 +131,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
+  web:
+    dependency: transitive
+    description:
+      name: web
+      sha256: cd3543bd5798f6ad290ea73d210f423502e71900302dde696f8bff84bf89a1cb
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
+  win32:
+    dependency: transitive
+    description:
+      name: win32
+      sha256: "154360849a56b7b67331c21f09a386562d88903f90a1099c5987afc1912e1f29"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.10.0"
 sdks:
   dart: ">=3.5.3 <4.0.0"
-  flutter: ">=3.3.0"
+  flutter: ">=3.24.0"

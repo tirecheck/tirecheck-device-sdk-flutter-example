@@ -12,7 +12,7 @@ class Snackbar {
   static final snackBarKeyB = GlobalKey<ScaffoldMessengerState>();
   static final snackBarKeyC = GlobalKey<ScaffoldMessengerState>();
 
-  static GlobalKey<ScaffoldMessengerState> getSnackbar(ABC abc) {
+  static GlobalKey<ScaffoldMessengerState> _getSnackbarKey(ABC abc) {
     switch (abc) {
       case ABC.a:
         return snackBarKeyA;
@@ -23,12 +23,16 @@ class Snackbar {
     }
   }
 
-  static show(ABC abc, String msg, {required bool success}) {
-    final snackBar = success
-        ? SnackBar(content: Text(msg), backgroundColor: Colors.blue)
-        : SnackBar(content: Text(msg), backgroundColor: Colors.red);
-    getSnackbar(abc).currentState?.removeCurrentSnackBar();
-    getSnackbar(abc).currentState?.showSnackBar(snackBar);
+  static void show(ABC abc, String msg,
+      {required bool success, Duration? duration}) {
+    final snackBar = SnackBar(
+      content: Text(msg),
+      backgroundColor: success ? Colors.blue : Colors.red,
+      duration: duration ?? const Duration(seconds: 4),
+    );
+    final scaffoldMessengerState = _getSnackbarKey(abc).currentState;
+    scaffoldMessengerState?.removeCurrentSnackBar();
+    scaffoldMessengerState?.showSnackBar(snackBar);
   }
 }
 
@@ -36,5 +40,5 @@ String prettyException(String prefix, dynamic e) {
   if (e is PlatformException) {
     return "$prefix ${e.message}";
   }
-  return prefix + e.toString();
+  return "$prefix ${e.toString()}";
 }

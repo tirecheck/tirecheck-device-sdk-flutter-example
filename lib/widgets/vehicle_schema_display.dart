@@ -69,8 +69,8 @@ class _VehicleSchemaDisplayState extends State<VehicleSchemaDisplay> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (spare1 != null) _buildTyreWidget(spare1!, isSpare: true),
-            if (spare2 != null) _buildTyreWidget(spare2!, isSpare: true),
+            if (spare1 != null) _buildTyreWidget(spare1, isSpare: true),
+            if (spare2 != null) _buildTyreWidget(spare2, isSpare: true),
           ],
         ),
       );
